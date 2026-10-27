@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Nimbus — 让数据自己说话</title>
+<style>
+  :root{
+    --bg:#08090d; --panel:#0f1218; --line:#1c2130; --text:#e8ecf6; --dim:#8b93a7;
+    --brand:#6366f1; --brand2:#22d3ee;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",Inter,sans-serif}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+
+  #nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);
+    background:rgba(8,9,13,.72);border-bottom:1px solid rgba(28,33,48,.8)}
+  #nav .wrap{height:64px;display:flex;align-items:center;gap:28px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+  .logo i{width:22px;height:22px;border-radius:7px;display:block;
+    background:conic-gradient(from 200deg,var(--brand),var(--brand2),var(--brand))}
+  .navlinks{display:flex;gap:22px;color:var(--dim);font-size:14px}
+  .navlinks a:hover{color:var(--text)}
+  #nav .spacer{flex:1}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 18px;
+    border-radius:9px;border:1px solid var(--line);background:#141824;font-size:14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(180deg,#6366f1,#4f46e5);border-color:#6d6ff5;
+    box-shadow:0 6px 24px rgba(99,102,241,.35)}
+  .btn:hover{filter:brightness(1.1)}
+
+  #hero{padding:96px 0 72px;position:relative;overflow:hidden}
+  #hero:before{content:"";position:absolute;inset:-40% 20% auto;height:520px;
+    background:radial-gradient(closest-side,rgba(99,102,241,.28),transparent 70%);pointer-events:none}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.6px;
+    color:#a5b4fc;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.1);
+    padding:5px 12px;border-radius:999px;text-transform:uppercase}
+  .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;
+    box-shadow:0 0 10px #4ade80;animation:breathe 2.4s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+  h1{font-size:58px;line-height:1.08;letter-spacing:-1.6px;margin:22px 0 18px;max-width:820px}
+  h1 em{font-style:normal;background:linear-gradient(92deg,#a5b4fc,#22d3ee 60%,#818cf8);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:17px;color:var(--dim);max-width:600px;margin:0 0 32px}
+  .cta{display:flex;gap:12px;align-items:center}
+
+  #stats{padding:8px 0 40px}
+  #stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .stat{background:linear-gradient(180deg,#11141c,#0c0f15);border:1px solid var(--line);
+    border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
+  .stat:after{content:"";position:absolute;inset:0 0 auto;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(99,102,241,.6),transparent)}
+  .stat b{display:block;font-size:30px;letter-spacing:-1px}
+  .stat span{color:var(--dim);font-size:13px}
+
+  #features{padding:64px 0}
+  .sechead{display:flex;align-items:end;justify-content:space-between;margin-bottom:30px}
+  .sechead h2{font-size:32px;letter-spacing:-.8px;margin:0}
+  .sechead p{color:var(--dim);margin:0;font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .feature-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:24px;transition:transform .25s cubic-bezier(.2,.7,.3,1),border-color .25s,box-shadow .25s}
+  .feature-card:hover{transform:translateY(-4px);border-color:#2c3350;
+    box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .feature-card .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(160deg,rgba(99,102,241,.28),rgba(34,211,238,.16));
+    border:1px solid rgba(99,102,241,.3);font-size:17px;margin-bottom:16px}
+  .feature-card h3{margin:0 0 8px;font-size:16px}
+  .feature-card p{margin:0;color:var(--dim);font-size:13.5px;line-height:1.6}
+
+  #logos{padding:24px 0 72px;overflow:hidden}
+  #logos .track{display:flex;gap:56px;width:max-content;animation:slide 22s linear infinite;
+    color:#4d5568;font-weight:700;letter-spacing:2px;font-size:14px}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 60px;color:var(--dim);font-size:13px}
+
+  #cookie{position:fixed;left:24px;right:24px;bottom:20px;z-index:99;display:flex;
+    align-items:center;gap:16px;padding:14px 18px;border-radius:14px;
+    background:rgba(17,20,28,.92);border:1px solid #262c3d;backdrop-filter:blur(12px);
+    box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  #cookie p{margin:0;font-size:13px;color:#b9c0d2;flex:1}
+</style>
+</head>
+<body>
+
+<header id="nav">
+  <div class="wrap">
+    <div class="logo"><i></i>Nimbus</div>
+    <nav class="navlinks">
+      <a href="#">产品</a><a href="#">方案</a><a href="#">定价</a><a href="#">文档</a>
+    </nav>
+    <div class="spacer"></div>
+    <button class="btn">登录</button>
+    <button class="btn primary">免费开始</button>
+  </div>
+</header>
+
+<section id="hero">
+  <div class="wrap">
+    <span class="eyebrow"><i class="dot"></i>v3.0 现已发布</span>
+    <h1>让<em>数据</em>自己说话，<br>让团队少开一半的会。</h1>
+    <p class="sub">Nimbus 把分散在 12 个系统里的指标收敛成一个实时视图。不需要 ETL，不需要数仓，接入 5 分钟见效。</p>
+    <div class="cta">
+      <button class="btn primary">开始免费试用 →</button>
+      <button class="btn">观看 2 分钟演示</button>
+    </div>
+  </div>
+</section>
+
+<section id="stats">
+  <div class="wrap">
+    <div class="stat"><b data-count="12800">0</b><span>活跃团队</span></div>
+    <div class="stat"><b data-count="99.98" data-suffix="%">0</b><span>月度可用性</span></div>
+    <div class="stat"><b data-count="42" data-suffix="ms">0</b><span>查询延迟 P95</span></div>
+    <div class="stat"><b data-count="3.6" data-suffix="M">0</b><span>每日事件</span></div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sechead">
+      <div><h2>为增长团队造的仪表盘</h2></div>
+      <p>开箱即用 · 无需数据工程</p>
+    </div>
+    <div class="grid">
+      <article class="feature-card">
+        <div class="ic">◉</div><h3>实时指标</h3>
+        <p>秒级延迟的事件流，不用等 T+1 的报表，也不用凌晨起来跑批。</p>
+      </article>
+      <article class="feature-card">
+        <div class="ic">⌘</div><h3>无代码接入</h3>
+        <p>一段 script 标签就能开始采集，SDK 覆盖 Web、iOS、Android。</p>
+      </article>
+      <article class="feature-card">
+        <div class="ic">✦</div><h3>异常归因</h3>
+        <p>自动定位指标异动的来源维度，把「为什么跌了」变成一句话。</p>
+      </article>
+      <article class="feature-card">
+        <div class="ic">⧉</div><h3>协作看板</h3>
+        <p>像文档一样评论、@同事、定稿，报表跟着人走而不是跟着系统走。</p>
+      </article>
+      <article class="feature-card">
+        <div class="ic">⤴</div><h3>一键分享</h3>
+        <p>生成只读链接和嵌入代码，发给客户时不用再截图。</p>
+      </article>
+      <article class="feature-card">
+        <div class="ic">⚙</div><h3>企业级权限</h3>
+        <p>SSO、审计日志、行级权限，满足最挑剔的安全评审。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="logos">
+  <div class="track">
+    <span>ACME</span><span>ORBIT</span><span>LINEAR</span><span>VERTEX</span><span>PALETTE</span><span>NORTHWIND</span>
+    <span>ACME</span><span>ORBIT</span><span>LINEAR</span><span>VERTEX</span><span>PALETTE</span><span>NORTHWIND</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Nimbus Labs · 隐私 · 条款 · 状态</div>
+</footer>
+
+<div id="cookie">
+  <p>我们使用 Cookie 来改善体验。继续浏览即表示你同意我们的<a href="#">隐私政策</a>。</p>
+  <button class="btn">仅必要</button>
+  <button class="btn primary">全部接受</button>
+</div>
+
+<script>
+  // 数字滚动：用 rAF 驱动，冻结后应停在中间值
+  const stats = [...document.querySelectorAll('[data-count]')];
+  const DURATION = 1600;
+  const start = performance.now();
+  const target = stats.map(el => parseFloat(el.dataset.count));
+  function tick(now) {
+    const p = Math.min(1, (now - start) / DURATION);
+    const e = 1 - Math.pow(1 - p, 3);
+    stats.forEach((el, i) => {
+      const v = target[i] * e;
+      el.textContent = target[i] >= 1000
+        ? Math.round(v).toLocaleString('en-US')
+        : v.toFixed(target[i] % 1 === 0 ? 0 : (target[i] < 4 ? 1 : 2));
+    });
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>

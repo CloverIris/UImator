@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data:; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+    <title>UImator — S1</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header id="bar">
+      <div class="brand">
+        <span class="logo"></span>
+        <span class="name">UImator</span>
+        <span class="tag">R2 · scan</span>
+      </div>
+
+      <div class="urlwrap">
+        <input id="url" spellcheck="false" placeholder="http://localhost:3000 或粘贴任意 URL" />
+        <button id="go" class="primary">加载</button>
+      </div>
+
+      <div class="actions">
+        <button id="pick" title="在页面里点选一个元素">拾取</button>
+        <button id="freeze" title="冻结时间、暂停动画">冻结</button>
+        <button id="shot" title="截取当前选中的元素">截取选中</button>
+        <button id="shotAll" title="截取整个视口">整屏</button>
+      </div>
+
+      <div id="status" class="status"><span class="pulse"></span>就绪</div>
+    </header>
+
+    <aside id="panel">
+      <div class="p-head">
+        <span class="p-title">候选</span>
+        <span id="candCount" class="count">0</span>
+        <div class="grow"></div>
+        <button id="scan" class="mini">扫描</button>
+      </div>
+      <div class="p-body" id="cands">
+        <div class="p-empty">
+          点「扫描」自动拆解当前页面，<br />或直接用工具栏的「拾取」手工选。
+        </div>
+      </div>
+      <div class="p-foot">
+        <label class="chk"><input type="checkbox" id="hoverMode" /> 采集悬停态</label>
+        <button id="hiRes" class="mini" title="按 6x 重截选中元素">6x 重截</button>
+      </div>
+    </aside>
+
+    <div id="stage"></div>
+
+    <footer id="strip">
+      <div class="strip-head">
+        <span class="title">素材箱</span>
+        <span id="count" class="count">0</span>
+        <div id="fixtures" class="fixtures"></div>
+        <span class="hint">点击缩略图在 Finder 中显示</span>
+      </div>
+      <div id="thumbs" class="thumbs">
+        <div class="empty">还没有素材 · 先「扫描」或「拾取」一个元素，再「截取选中」</div>
+      </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="./main.js"></script>
+  </body>
+</html>

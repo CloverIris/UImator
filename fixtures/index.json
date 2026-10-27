@@ -1,0 +1,37 @@
+[
+  {
+    "id": "landing",
+    "label": "落地页",
+    "file": "landing.html",
+    "picks": [
+      { "label": "hero", "selector": "#hero" },
+      { "label": "features", "selector": "#features" },
+      { "label": "card", "selector": ".feature-card" },
+      { "label": "stats", "selector": "#stats" },
+      { "label": "cookie", "selector": "#cookie" }
+    ]
+  },
+  {
+    "id": "dashboard",
+    "label": "Dashboard",
+    "file": "dashboard.html",
+    "picks": [
+      { "label": "chart", "selector": "#chart-card" },
+      { "label": "stat", "selector": "#stat-card" },
+      { "label": "sidebar", "selector": "#sidebar" },
+      { "label": "table", "selector": "#table-card" },
+      { "label": "float", "selector": "#upgrade" }
+    ]
+  },
+  {
+    "id": "pricing",
+    "label": "定价页",
+    "file": "pricing.html",
+    "picks": [
+      { "label": "tiers", "selector": "#tiers" },
+      { "label": "featured", "selector": ".tier.featured" },
+      { "label": "faq", "selector": "#faq" },
+      { "label": "head", "selector": "#head" }
+    ]
+  }
+]

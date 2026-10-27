@@ -1,0 +1,30 @@
+{
+  "name": "uimator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "把运行中的 H5 / Electron 界面拆成 3D 舞台素材，用模板化的镜头、灯光与排版，导出一条产品宣发短片。",
+  "main": "dist/main/index.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "npm run build && node scripts/run.mjs",
+    "start:sandbox": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs",
+    "selftest": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --selftest",
+    "uicheck": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --uicheck",
+    "batch": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --batch",
+    "typecheck": "tsc --noEmit",
+    "matrix": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --matrix",
+    "recap": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --recap",
+    "tree": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --tree",
+    "stage": "npm run build && UIMATOR_SANDBOX=0 node scripts/run.mjs --stage"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "electron": "^45.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Nimbus — Dashboard</title>
+<style>
+  :root{
+    --bg:#07080c; --panel:#0e1117; --panel2:#121620; --line:#1c2230;
+    --text:#e7ebf5; --dim:#848da3; --brand:#38bdf8; --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font:13px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC",Inter,sans-serif}
+  body{display:flex;min-height:100vh}
+
+  #sidebar{width:236px;flex:0 0 236px;background:#090b11;border-right:1px solid var(--line);
+    padding:18px 14px;display:flex;flex-direction:column;gap:6px;position:fixed;inset:0 auto 0 0;z-index:20}
+  #sidebar .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;
+    padding:6px 8px 16px}
+  #sidebar .brand i{width:20px;height:20px;border-radius:6px;display:block;
+    background:linear-gradient(140deg,#38bdf8,#6366f1)}
+  .navitem{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;
+    color:var(--dim);font-size:13px;cursor:pointer}
+  .navitem:hover{background:#11151e;color:var(--text)}
+  .navitem.active{background:rgba(56,189,248,.12);color:#bae6fd;
+    box-shadow:inset 0 0 0 1px rgba(56,189,248,.22)}
+  .navitem .k{font:10px/1 ui-monospace,monospace;color:#4b5567;margin-left:auto}
+  #sidebar .grow{flex:1}
+  .plan{background:linear-gradient(160deg,#131a26,#0d1118);border:1px solid var(--line);
+    border-radius:12px;padding:12px}
+  .plan b{display:block;font-size:12px;margin-bottom:2px}
+  .plan span{color:var(--dim);font-size:11px}
+
+  main{margin-left:236px;flex:1;padding:22px 28px 40px;min-width:0}
+
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .top h1{font-size:19px;margin:0;letter-spacing:-.3px}
+  .top .crumb{color:#4b5567;font-size:12px}
+  .top .spacer{flex:1}
+  .search{width:240px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:#0b0e14;color:var(--dim);padding:0 12px;font-size:12px}
+  .btn{height:32px;padding:0 13px;border-radius:8px;border:1px solid var(--line);
+    background:#131824;color:var(--text);font-size:12px;cursor:pointer}
+  .btn.primary{background:linear-gradient(180deg,#0ea5e9,#0284c7);border-color:#0ea5e9}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  #stat-card{background:linear-gradient(170deg,#10141c,#0c0f15);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+  #stat-card .lab{color:var(--dim);font-size:12px;display:flex;justify-content:space-between}
+  #stat-card .val{font-size:26px;letter-spacing:-.8px;margin-top:8px}
+  #stat-card .delta{font-size:11px;margin-top:6px;color:var(--ok)}
+  #stat-card .delta.down{color:var(--err)}
+  #stat-card .spark{position:absolute;right:0;bottom:0;opacity:.5}
+
+  .row2{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:18px}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .panel .ph{display:flex;align-items:center;margin-bottom:12px}
+  .panel .ph b{font-size:13px}
+  .panel .ph .spacer{flex:1}
+  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .seg span{padding:3px 9px;font-size:11px;color:var(--dim);cursor:pointer}
+  .seg span.on{background:#16202e;color:#bae6fd}
+
+  #chart-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px 8px;position:relative}
+  #chart-card canvas{width:100%;height:236px;display:block}
+  #chart-card .legend{display:flex;gap:16px;font-size:11px;color:var(--dim);margin-top:10px}
+  #chart-card .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+
+  #table-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  #table-card .ph{padding:14px 18px 0;display:flex;margin-bottom:8px}
+  #table-card .ph b{font-size:13px}
+  #table-card .ph .spacer{flex:1}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;color:#5b6478;font-weight:500;padding:8px 18px;
+    border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.3px}
+  td{padding:9px 18px;border-bottom:1px solid #141922}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover td{background:#0f141d}
+  .pill{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid}
+  .pill.ok{color:#6ee7b7;border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.1)}
+  .pill.warn{color:#fcd34d;border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.1)}
+  .pill.err{color:#fca5a5;border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.1)}
+  .who{display:flex;align-items:center;gap:8px}
+  .ava{width:20px;height:20px;border-radius:50%;background:linear-gradient(140deg,#334155,#1e293b);
+    font-size:9px;display:grid;place-items:center;color:#94a3b8}
+
+  #upgrade{position:fixed;right:22px;bottom:22px;width:280px;z-index:30;
+    background:rgba(18,23,33,.72);backdrop-filter:blur(16px) saturate(140%);
+    border:1px solid rgba(56,189,248,.25);border-radius:16px;padding:16px;
+    box-shadow:0 24px 70px rgba(0,0,0,.65)}
+  #upgrade b{font-size:13px}
+  #upgrade p{color:var(--dim);font-size:12px;margin:6px 0 12px}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="brand"><i></i>Nimbus</div>
+  <div class="navitem active">概览 <span class="k">G O</span></div>
+  <div class="navitem">事件流</div>
+  <div class="navitem">漏斗</div>
+  <div class="navitem">留存</div>
+  <div class="navitem">实验 <span class="k">β</span></div>
+  <div class="navitem">设置</div>
+  <div class="grow"></div>
+  <div class="plan">
+    <b>Team 版 · 14 天试用</b>
+    <span>剩余 9 天 · 已用 62% 额度</span>
+  </div>
+</aside>
+
+<main>
+  <div class="top">
+    <h1>概览</h1>
+    <span class="crumb">/ 生产环境</span>
+    <div class="spacer"></div>
+    <input class="search" placeholder="搜索指标、事件、漏斗…">
+    <button class="btn">导出</button>
+    <button class="btn primary">新建看板</button>
+  </div>
+
+  <section class="cards">
+    <div id="stat-card">
+      <div class="lab"><span>日活用户</span><span>24h</span></div>
+      <div class="val">38,412</div>
+      <div class="delta">▲ 12.4% vs 上周</div>
+      <svg class="spark" width="120" height="46" viewBox="0 0 120 46">
+        <path d="M0 38 L15 32 L30 34 L45 24 L60 27 L75 18 L90 20 L105 10 L120 12"
+              fill="none" stroke="#38bdf8" stroke-width="1.6" opacity=".9"/>
+      </svg>
+    </div>
+    <div class="stat" id="stat-card2" style="background:linear-gradient(170deg,#10141c,#0c0f15);border:1px solid var(--line);border-radius:14px;padding:16px 18px">
+      <div style="color:var(--dim);font-size:12px;display:flex;justify-content:space-between"><span>转化率</span><span>24h</span></div>
+      <div style="font-size:26px;letter-spacing:-.8px;margin-top:8px">4.82%</div>
+      <div style="font-size:11px;margin-top:6px;color:var(--ok)">▲ 0.6pp</div>
+    </div>
+    <div class="stat" style="background:linear-gradient(170deg,#10141c,#0c0f15);border:1px solid var(--line);border-radius:14px;padding:16px 18px">
+      <div style="color:var(--dim);font-size:12px;display:flex;justify-content:space-between"><span>ARPU</span><span>30d</span></div>
+      <div style="font-size:26px;letter-spacing:-.8px;margin-top:8px">$18.40</div>
+      <div style="font-size:11px;margin-top:6px;color:var(--err)">▼ 1.2%</div>
+    </div>
+    <div class="stat" style="background:linear-gradient(170deg,#10141c,#0c0f15);border:1px solid var(--line);border-radius:14px;padding:16px 18px">
+      <div style="color:var(--dim);font-size:12px;display:flex;justify-content:space-between"><span>流失率</span><span>30d</span></div>
+      <div style="font-size:26px;letter-spacing:-.8px;margin-top:8px">1.94%</div>
+      <div style="font-size:11px;margin-top:6px;color:var(--ok)">▼ 0.3pp</div>
+    </div>
+  </section>
+
+  <div class="row2">
+    <div id="chart-card">
+      <div class="ph" style="display:flex;align-items:center;margin-bottom:12px">
+        <b>活跃趋势</b>
+        <div style="flex:1"></div>
+        <div class="seg"><span>24h</span><span class="on">7d</span><span>30d</span></div>
+      </div>
+      <canvas id="chart"></canvas>
+      <div class="legend">
+        <span><i style="background:#38bdf8"></i>日活</span>
+        <span><i style="background:#818cf8"></i>周活</span>
+        <span><i style="background:#334155"></i>去年同期</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><b>渠道构成</b><div class="spacer"></div><span style="color:var(--dim);font-size:11px">近 7 天</span></div>
+      <div id="donut"></div>
+    </div>
+  </div>
+
+  <div id="table-card">
+    <div class="ph"><b>最近事件</b><div class="spacer"></div><span style="color:var(--dim);font-size:11px">实时</span></div>
+    <table>
+      <thead><tr><th>事件</th><th>用户</th><th>来源</th><th>耗时</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>checkout.completed</td><td><div class="who"><span class="ava">LK</span>lin.kai</div></td><td>organic</td><td>142ms</td><td><span class="pill ok">成功</span></td></tr>
+        <tr><td>signup.started</td><td><div class="who"><span class="ava">MA</span>maya.a</div></td><td>referral</td><td>88ms</td><td><span class="pill ok">成功</span></td></tr>
+        <tr><td>export.requested</td><td><div class="who"><span class="ava">TS</span>t.sato</div></td><td>direct</td><td>1.2s</td><td><span class="pill warn">重试</span></td></tr>
+        <tr><td>payment.failed</td><td><div class="who"><span class="ava">JD</span>j.diaz</div></td><td>ads</td><td>310ms</td><td><span class="pill err">失败</span></td></tr>
+        <tr><td>dashboard.viewed</td><td><div class="who"><span class="ava">EW</span>e.wong</div></td><td>organic</td><td>64ms</td><td><span class="pill ok">成功</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div id="upgrade">
+  <b>升级到 Scale</b>
+  <p>解锁无限看板、行级权限与 24 个月数据留存。</p>
+  <button class="btn primary" style="width:100%">查看方案</button>
+</div>
+
+<script>
+  // 折线图：逐帧绘制，冻结后停在当前进度
+  const cv = document.getElementById('chart');
+  const ctx = cv.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  function resize() {
+    const r = cv.getBoundingClientRect();
+    cv.width = r.width * dpr; cv.height = r.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+
+  const series = [
+    { color: '#38bdf8', w: 2, pts: [22,28,24,35,31,42,38,47,44,52,49,58] },
+    { color: '#818cf8', w: 1.4, pts: [12,15,14,18,20,19,24,23,27,26,30,29] },
+    { color: '#334155', w: 1.2, pts: [8,9,11,10,12,11,13,12,14,13,15,14] },
+  ];
+
+  const W = 640, H = 236, PAD = 10;
+  const t0 = performance.now();
+  function draw(now) {
+    const p = Math.min(1, (now - t0) / 1400);
+    const e = 1 - Math.pow(1 - p, 3);
+    const rect = cv.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // 网格
+    ctx.strokeStyle = '#161c26'; ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = PAD + (h - PAD * 2) * i / 4;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+
+    series.forEach((s, si) => {
+      const max = 62;
+      const n = s.pts.length;
+      ctx.beginPath();
+      const shown = Math.max(2, Math.ceil(n * e));
+      for (let i = 0; i < shown; i++) {
+        const x = (w - PAD * 2) * i / (n - 1) + PAD;
+        const y = h - PAD - (h - PAD * 2) * (s.pts[i] / max);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.w;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    });
+
+    if (p < 1) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // 环形图（静态 SVG）
+  const donut = document.getElementById('donut');
+  const parts = [['Organic', 46, '#38bdf8'], ['Referral', 27, '#818cf8'], ['Ads', 18, '#22d3ee'], ['Direct', 9, '#334155']];
+  let acc = 0, R = 52, C = 2 * Math.PI * R;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 140 140');
+  svg.setAttribute('width', '140'); svg.setAttribute('height', '140');
+  svg.style.display = 'block'; svg.style.margin = '6px auto';
+  parts.forEach(([name, pct, color]) => {
+    const len = C * pct / 100;
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', '70'); c.setAttribute('cy', '70'); c.setAttribute('r', String(R));
+    c.setAttribute('fill', 'none'); c.setAttribute('stroke', color);
+    c.setAttribute('stroke-width', '14');
+    c.setAttribute('stroke-dasharray', `${len} ${C - len}`);
+    c.setAttribute('stroke-dashoffset', String(-acc));
+    c.setAttribute('transform', 'rotate(-90 70 70)');
+    svg.appendChild(c);
+    acc += len;
+  });
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', '70'); label.setAttribute('y', '66');
+  label.setAttribute('text-anchor', 'middle'); label.setAttribute('fill', '#e7ebf5');
+  label.setAttribute('font-size', '19'); label.setAttribute('font-weight', '600');
+  label.textContent = '38.4k';
+  const label2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label2.setAttribute('x', '70'); label2.setAttribute('y', '84');
+  label2.setAttribute('text-anchor', 'middle'); label2.setAttribute('fill', '#5b6478');
+  label2.setAttribute('font-size', '10');
+  label2.textContent = '总用户';
+  svg.append(label, label2);
+  donut.appendChild(svg);
+</script>
+</body>
+</html>

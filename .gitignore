@@ -1,0 +1,9 @@
+node_modules/
+dist/
+captures/
+reports/
+.userdata/
+.home/
+.DS_Store
+*.log
+projects/

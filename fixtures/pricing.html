@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Nimbus — 定价</title>
+<style>
+  :root{--bg:#08090d;--panel:#0f1117;--line:#1d2230;--text:#e9edf7;--dim:#8a92a6;
+    --brand:#6366f1;--brand2:#22d3ee}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:
+      radial-gradient(900px 480px at 50% -8%,rgba(99,102,241,.16),transparent 70%),var(--bg);
+    color:var(--text);font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC",Inter,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+  #head{position:sticky;top:0;z-index:20;background:rgba(8,9,13,.78);
+    backdrop-filter:blur(16px);border-bottom:1px solid rgba(29,34,48,.9)}
+  #head .wrap{height:62px;display:flex;align-items:center;gap:26px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:700}
+  .logo i{width:20px;height:20px;border-radius:6px;display:block;
+    background:linear-gradient(140deg,var(--brand),var(--brand2))}
+  .links{display:flex;gap:20px;color:var(--dim);font-size:14px}
+  .links a:hover{color:var(--text)}
+  .spacer{flex:1}
+
+  .hero{text-align:center;padding:66px 0 26px}
+  .hero h1{font-size:42px;letter-spacing:-1.2px;margin:0 0 12px}
+  .hero p{color:var(--dim);margin:0 auto;max-width:520px;font-size:15px}
+
+  .toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px 0 34px;
+    font-size:13px;color:var(--dim)}
+  .switch{width:46px;height:26px;border-radius:999px;background:#1d2433;border:1px solid #2b3346;
+    position:relative;cursor:pointer;transition:background .2s}
+  .switch:after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:#8a92a6;transition:transform .2s,background .2s}
+  .switch.on{background:rgba(99,102,241,.35);border-color:#6366f1}
+  .switch.on:after{transform:translateX(20px);background:#c7d2fe}
+  .save{color:#6ee7b7;font-size:12px;border:1px solid rgba(52,211,153,.3);
+    background:rgba(52,211,153,.08);padding:2px 8px;border-radius:999px}
+
+  #tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start;padding-bottom:36px}
+  .tier{background:linear-gradient(180deg,#11141c,#0b0e14);border:1px solid var(--line);
+    border-radius:18px;padding:26px 24px;position:relative}
+  .tier.featured{border-color:rgba(99,102,241,.55);
+    box-shadow:0 22px 70px rgba(99,102,241,.18),inset 0 1px 0 rgba(255,255,255,.04);
+    transform:translateY(-10px)}
+  .tier.featured:before{content:"最受欢迎";position:absolute;top:-11px;left:24px;
+    font-size:11px;letter-spacing:.4px;color:#c7d2fe;background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    padding:3px 10px;border-radius:999px}
+  .tier h3{margin:0 0 4px;font-size:16px}
+  .tier .desc{color:var(--dim);font-size:12.5px;min-height:38px}
+  .price{font-size:38px;letter-spacing:-1.4px;margin:14px 0 2px}
+  .price small{font-size:13px;color:var(--dim);letter-spacing:0}
+  .per{color:var(--dim);font-size:12px;margin-bottom:18px}
+  .btn{width:100%;height:40px;border-radius:9px;border:1px solid var(--line);
+    background:#151a24;color:var(--text);font-size:14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(180deg,#6366f1,#4f46e5);border-color:#7072f6}
+  ul{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:9px}
+  li{display:flex;gap:9px;font-size:13px;color:#c3c9d8}
+  li:before{content:"✓";color:#34d399;font-size:12px;line-height:1.7}
+
+  #faq{padding:20px 0 70px;max-width:760px;margin:0 auto}
+  #faq h2{font-size:24px;letter-spacing:-.6px;margin:0 0 16px}
+  details{border-bottom:1px solid var(--line);padding:14px 0}
+  summary{cursor:pointer;font-size:14px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary:after{content:"+";float:right;color:var(--dim)}
+  details[open] summary:after{content:"−"}
+  details p{color:var(--dim);font-size:13.5px;margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<header id="head">
+  <div class="wrap">
+    <div class="logo"><i></i>Nimbus</div>
+    <nav class="links"><a href="#">产品</a><a href="#">方案</a><a href="#">定价</a><a href="#">文档</a><a href="#">博客</a></nav>
+    <div class="spacer"></div>
+    <button class="btn" style="width:auto;padding:0 16px;height:34px">登录</button>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <h1>简单透明的定价</h1>
+  <p>按团队规模计费，不按事件量。没有隐藏的用量账单，也没有超限罚款。</p>
+
+  <div class="toggle">
+    <span>按月</span>
+    <div class="switch" id="switch"></div>
+    <span>按年</span>
+    <span class="save">省 20%</span>
+  </div>
+</section>
+
+<section id="tiers" class="wrap">
+  <article class="tier">
+    <h3>Starter</h3>
+    <p class="desc">适合刚起步的小团队，验证第一个增长假设。</p>
+    <div class="price">¥0<small> /月</small></div>
+    <div class="per">最多 3 人 · 10 万事件/月</div>
+    <button class="btn">免费开始</button>
+    <ul>
+      <li>5 个看板</li><li>7 天数据留存</li><li>社区支持</li>
+    </ul>
+  </article>
+
+  <article class="tier featured">
+    <h3>Team</h3>
+    <p class="desc">适合有专职增长的团队，从「看数」到「决策」。</p>
+    <div class="price" data-month="¥199" data-year="¥159">¥199<small> /月</small></div>
+    <div class="per">最多 20 人 · 500 万事件/月</div>
+    <button class="btn primary">开始 14 天试用</button>
+    <ul>
+      <li>无限看板与漏斗</li><li>12 个月数据留存</li><li>异常归因与告警</li><li>邮件与 IM 支持</li>
+    </ul>
+  </article>
+
+  <article class="tier">
+    <h3>Scale</h3>
+    <p class="desc">适合多产品线或多区域的组织，需要治理与合规。</p>
+    <div class="price" data-month="¥699" data-year="¥559">¥699<small> /月</small></div>
+    <div class="per">不限人数 · 自定义事件量</div>
+    <button class="btn">联系销售</button>
+    <ul>
+      <li>SSO / SCIM</li><li>行级权限与审计日志</li><li>私有化部署选项</li><li>专属成功经理</li>
+    </ul>
+  </article>
+</section>
+
+<section id="faq">
+  <h2>常见问题</h2>
+  <details open><summary>事件量超了会怎样？</summary>
+    <p>不会停机，也不会自动扣费。我们会提前 7 天提醒你，你可以选择升级或采样。</p></details>
+  <details><summary>可以中途换方案吗？</summary>
+    <p>可以，按剩余天数折算，差额在下个账期抵扣。</p></details>
+  <details><summary>支持私有化部署吗？</summary>
+    <p>Scale 方案支持 Docker Compose 与 Kubernetes 两种交付形态。</p></details>
+</section>
+
+<script>
+  const sw = document.getElementById('switch');
+  let yearly = false;
+  sw.addEventListener('click', () => {
+    yearly = !yearly;
+    sw.classList.toggle('on', yearly);
+    document.querySelectorAll('.price[data-month]').forEach(el => {
+      const v = yearly ? el.dataset.year : el.dataset.month;
+      el.innerHTML = v + '<small> /月</small>';
+    });
+  });
+</script>
+</body>
+</html>

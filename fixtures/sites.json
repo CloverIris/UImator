@@ -1,0 +1,14 @@
+[
+  { "id": "linear", "name": "Linear", "url": "https://linear.app", "expect": "ok", "note": "深色 SaaS 落地页，动画多" },
+  { "id": "vercel", "name": "Vercel", "url": "https://vercel.com", "expect": "ok", "note": "大留白 + 渐变" },
+  { "id": "stripe", "name": "Stripe", "url": "https://stripe.com", "expect": "ok", "note": "复杂营销页，多层背景" },
+  { "id": "tailwind", "name": "Tailwind CSS", "url": "https://tailwindcss.com", "expect": "ok", "note": "文档站，卡片规整" },
+  { "id": "github", "name": "GitHub", "url": "https://github.com", "expect": "partial", "note": "重型应用，结构复杂" },
+  { "id": "hn", "name": "Hacker News", "url": "https://news.ycombinator.com", "expect": "partial", "note": "纯表格，几乎没有卡片语言" },
+  { "id": "wikipedia", "name": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Main_Page", "expect": "partial", "note": "纯文本，测试候选过滤" },
+  { "id": "echarts", "name": "ECharts Examples", "url": "https://echarts.apache.org/examples/en/index.html", "expect": "partial", "note": "canvas 图表，验证不可再生素材" },
+  { "id": "figma", "name": "Figma", "url": "https://www.figma.com", "expect": "fail", "note": "canvas 应用，预期拆不出东西" },
+  { "id": "x", "name": "X", "url": "https://x.com", "expect": "fail", "note": "登录墙，预期失败" },
+  { "id": "v2ex", "name": "V2EX", "url": "https://www.v2ex.com", "expect": "partial", "note": "中文站点，测试字体与行高" },
+  { "id": "notion", "name": "Notion", "url": "https://www.notion.com", "expect": "partial", "note": "SPA，骨架屏与懒加载" }
+]
