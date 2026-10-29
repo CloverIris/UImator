@@ -111,6 +111,9 @@ export function selectExpr(selector: string, maxNodes = 40, maxDepth = 4): strin
       if (tag === 'svg') return 'icon';
       if (tag === 'canvas') return 'chart';
       if (['p','li','span','strong','em','label','a'].includes(tag)) return 'text';
+      const rr = el.getBoundingClientRect();
+      const short = (el.textContent || '').trim();
+      if (rr.width <= 72 && rr.height <= 72 && short.length <= 2) return 'icon';
       const r = parseFloat(cs.borderTopLeftRadius) || 0;
       if (r > 4 && (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none')) return 'card';
       return 'group';

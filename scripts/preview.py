@@ -12,7 +12,7 @@ import json
 import math
 import sys
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 W, H = 1280, 720
 FOV = 32.0
@@ -63,7 +63,8 @@ def make_z(t):
         base = z_of(p) if p is not None else 0.0
         role = n['role']
         if role == 'card':
-            st = ease(clamp01((t - 0.15 - card_seq.get(key, 0) * 0.07) / 0.85))
+            top = p is not None and p['role'] != 'card'
+            st = ease(clamp01((t - 0.15 - card_seq.get(key, 0) * 0.07) / 0.85)) if top else 0.0
             local = st * 165
         elif role == 'icon':
             local = 8.0
@@ -104,10 +105,32 @@ def homography(src, dst):
     return np.append(h, 1).reshape(3, 3)
 
 
+_bg = None
+
+
+def background():
+    """深色径向渐变 + 暗角。纯色会让所有平面都像贴纸。"""
+    global _bg
+    if _bg is not None:
+        return _bg.copy()
+    yy, xx = np.mgrid[0:H, 0:W]
+    nx = (xx - W / 2) / (W / 2)
+    ny = (yy - H * 0.42) / (H / 2)
+    d = np.sqrt(nx ** 2 + ny ** 2)
+    glow = np.clip(1 - d / 1.25, 0, 1) ** 2.2
+    base = np.array([8, 10, 16], dtype=np.float32)
+    top = np.array([16, 20, 32], dtype=np.float32)
+    img = base + (top - base) * glow[..., None]
+    vig = np.clip(1 - 0.55 * np.clip(d - 0.55, 0, 2) ** 1.6, 0, 1)
+    img = img * vig[..., None]
+    _bg = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), 'RGB').convert('RGBA')
+    return _bg.copy()
+
+
 def render(t):
     p = clamp01(t / DURATION)
     dolly = ease(clamp01(t / (DURATION * 0.9)))
-    cam = np.array([-90 + 180 * dolly, 60 - 60 * dolly, 1850 - 520 * dolly])
+    cam = np.array([-60 + 120 * dolly, 46 - 46 * dolly, 2140 - 560 * dolly])
     target = np.zeros(3)
     fwd = target - cam
     fwd /= np.linalg.norm(fwd)
@@ -120,7 +143,7 @@ def render(t):
     sy = -30 + 20 * p
 
     z_of = make_z(t)
-    canvas = Image.new('RGBA', (W, H), (6, 7, 11, 255))
+    canvas = background()
     quads = []
 
     for n in nodes:
@@ -143,6 +166,7 @@ def render(t):
 
         hw, hh = n['abs']['w'] / 2, n['abs']['h'] / 2
         corners = []
+        zs = []
         for sx, cy_ in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
             q = (bx + sx * hw, by + cy_ * hh * -1, z)
             q = rot_y(q, ry)
@@ -150,6 +174,7 @@ def render(t):
             q = (q[0], q[1] + sy, q[2])
             rel = np.array(q) - cam
             zc = float(np.dot(rel, fwd))
+            zs.append(zc)
             if zc <= 40:
                 corners = None
                 break
@@ -159,9 +184,24 @@ def render(t):
             corners.append(((nx * 0.5 + 0.5) * W, (1 - (ny * 0.5 + 0.5)) * H))
         if not corners:
             continue
-        quads.append((zc, n, corners, opacity))
+        quads.append((sum(zs) / len(zs), n, corners, opacity))
 
     quads.sort(key=lambda q: -q[0])
+
+    # 接触阴影：只给卡片与图标做，用投影轮廓 + 高斯模糊，
+    # 它决定「浮起来」还是「贴上去」——没有阴影的位移看起来只是错位。
+    shadow = Image.new('L', (W, H), 0)
+    sd = ImageDraw.Draw(shadow)
+    for zc, n, corners, opacity in quads:
+        if n['role'] not in ('card', 'icon') or opacity < 0.25:
+            continue
+        off = [(x + 10, y + 18) for x, y in corners]
+        sd.polygon(off, fill=int(150 * opacity))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(16))
+    shadow_rgba = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    shadow_rgba.putalpha(shadow.point(lambda v: int(v * 0.55)))
+    canvas.alpha_composite(shadow_rgba)
+
     for zc, n, corners, opacity in quads:
         try:
             im = Image.open(n['render']['file']).convert('RGBA')
@@ -187,9 +227,19 @@ def render(t):
 
 
 if __name__ == '__main__':
-    times = [float(x) for x in sys.argv[1:]] or [0.6, 1.4, 2.2, 3.0]
-    for t in times:
-        img = render(t)
-        out = f'captures/preview-t{t:.1f}.png'
-        img.save(out)
-        print(out)
+    args = sys.argv[1:]
+    if args and args[0] == '--gif':
+        fps = 12
+        n = int(round(fps * DURATION))
+        frames = [render(i / fps).convert('RGB').resize((720, 405), Image.LANCZOS) for i in range(n)]
+        out = 'captures/stage.gif'
+        frames[0].save(out, save_all=True, append_images=frames[1:],
+                       duration=int(1000 / fps), loop=0, optimize=True)
+        print(out, len(frames), 'frames')
+    else:
+        times = [float(x) for x in args] or [0.6, 1.4, 2.2, 3.0]
+        for t in times:
+            img = render(t)
+            out = f'captures/preview-t{t:.1f}.png'
+            img.save(out)
+            print(out)

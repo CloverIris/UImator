@@ -38,12 +38,14 @@ async function init() {
 
   const loader = new THREE.TextureLoader()
   const flat: N[] = []
-  const walk = (n: N, parentZ: number, cardOrder: number) => {
+  const walk = (n: N, parentZ: number, cardOrder: number, parentRole?: string) => {
+    const isTopCard = n.role === 'card' && (!parentRole || parentRole !== 'card')
     const local = n.role === 'card' ? 0 : n.role === 'icon' ? 8 : n.role === 'heading' || n.role === 'text' ? 2 : 0.5
     const z = parentZ + local
-    flat.push({ ...n, __z: z, __card: n.role === 'card' ? cardSeq : cardOrder })
-    n.children.forEach((c: N) => walk(c, z, n.role === 'card' ? cardSeq : cardOrder))
-    if (n.role === 'card') cardSeq++
+    const top = n.role === 'card' && parentRole !== 'card'
+    flat.push({ ...n, __z: z, __card: top ? cardSeq : cardOrder })
+    n.children.forEach((c: N) => walk(c, z, top ? cardSeq : cardOrder, n.role))
+    if (top) cardSeq++
   }
   tree.nodes.forEach((n: N) => walk(n, 0, -1))
 
@@ -105,7 +107,7 @@ async function init() {
 function renderAt(t: number) {
   const p = clamp01(t / DURATION)
   const dolly = ease(clamp01(t / (DURATION * 0.9)))
-  camera.position.set(-90 + 180 * dolly, 60 - 60 * dolly, 1850 - 520 * dolly)
+  camera.position.set(-60 + 120 * dolly, 46 - 46 * dolly, 2140 - 560 * dolly)
   camera.lookAt(0, 0, 0)
 
   stage.rotation.y = -0.17 + 0.26 * ease(p)
